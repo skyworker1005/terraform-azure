@@ -1,4 +1,3 @@
-
 variable "prefix" {
   description = "A prefix used to name the resources."
   type        = string
@@ -21,7 +20,6 @@ variable "location" {
   type        = string
 }
 
-
 variable "storage_account_name" {
   type        = string
   description = "The name of the storage account to create."
@@ -37,16 +35,6 @@ variable "tags" {
   description = "A mapping of tags to assign to the resource."
   default     = {}
 }
-
-# variable "databricks_workspace_id" {
-#   description = "The ID of the Databricks workspace that will access the ADLS Gen2 storage."
-#   type        = string
-# }
-
-# variable "databricks_workspace_managed_identity_id" {
-#   description = "The managed identity of the Databricks workspace that will access the ADLS Gen2 storage."
-#   type        = string
-# }
 
 variable "databricks_principal_id" {
   description = "databricks_principal_id"

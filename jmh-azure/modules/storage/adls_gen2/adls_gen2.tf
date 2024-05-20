@@ -35,13 +35,7 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "gold" {
   depends_on = [azurerm_storage_account.sa]
 }
 
-# Databricks 서비스가 스토리지에 접근할 수 있는 권한 부여
-# resource "azurerm_role_assignment" "databricks_sa_access" {
-#   principal_id        = var.databricks_workspace_id
-#   role_definition_name = "Storage Blob Data Contributor"
-#   scope          = azurerm_storage_account.sa.id
-# }
-
+# Assigns a given Service Principal (User or Group) to a given Role.
 resource "azurerm_role_assignment" "databricks_sa_access" {
   principal_id        = var.databricks_principal_id
   role_definition_name = "Storage Blob Data Contributor"
@@ -51,5 +45,13 @@ resource "azurerm_role_assignment" "databricks_sa_access" {
     delete = "30m"
   }
 }
+
+
+resource "azurerm_storage_container" "unity_catalog_metadata" {
+  name                  = "unity-catalog-metadata"
+  storage_account_name  = azurerm_storage_account.sa.name
+  container_access_type = "private"
+}
+
 
 

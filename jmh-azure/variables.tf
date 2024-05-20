@@ -10,12 +10,10 @@ variable "location" {
   description = "The Azure region where the resources will be created."
 }
 
-
 variable "environment" {
   description = "Environment is development or production environment information."
   default     = "DEV"
 }
-
 
 variable "vnet_name" {
   description = "The name of the virtual network."
@@ -52,7 +50,6 @@ variable "subnet2_cidr" {
   type        = string
   default = "10.0.2.0/24"
 }
-
 
 variable "databricks_principal_id" {
   description = "databricks_principal_id"

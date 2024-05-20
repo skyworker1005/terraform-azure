@@ -10,7 +10,6 @@ output "subnet2_id" {
   value = azurerm_subnet.subnet2.id
 }
 
-
 output "subnet1_name" {
   value = azurerm_subnet.subnet1.name
 }
@@ -18,7 +17,6 @@ output "subnet1_name" {
 output "subnet2_name" {
   value = azurerm_subnet.subnet2.name
 }
-
 
 output "nsg_association1" {
   value = azurerm_subnet_network_security_group_association.nsg_association1.id

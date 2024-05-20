@@ -27,7 +27,6 @@ variable "rg_name" {
   default = "DATABRICKS"
 }
 
-
 variable "sku" {
   description = "The prefix used for all resources in this example"
   type        = string
@@ -36,31 +35,20 @@ variable "sku" {
     error_message = "Err: Valid options are ‘standard’, ‘premium’ or ‘trial’."
   }
 }
-
 variable "vnet_id" {
   description = "Virtual network id from network module."
   type        = string
 }
-
-# variable "subnet1_id" {
-#   description = "Public subnet id from network module."
-#   type        = string
-# }
 
 variable "subnet1_name" {
   description = "Public subnet id from network module."
   type        = string
 }
 
-# variable "subnet2_id" {
-#   description = "Private subnet id from network module."
-#   type        = string
-# }
 variable "subnet2_name" {
   description = "Public subnet id from network module."
   type        = string
 }
-
 
 variable "nsg_association1" {
   description = "The NSG ID associated with the public subnet"
@@ -68,12 +56,8 @@ variable "nsg_association1" {
   default = "value"
 }
 
-
-
 variable "nsg_association2" {
   description = "The NSG ID associated with the public subnet"
   type        = string
   default = "value"
 }
-
-

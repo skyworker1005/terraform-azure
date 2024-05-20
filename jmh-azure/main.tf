@@ -1,5 +1,3 @@
-
-
 module "network" {
   source      = "./modules/network"
   prefix      = var.prefix
@@ -10,9 +8,6 @@ module "network" {
   subnet1_cidr =var.subnet1_cidr
   subnet2_cidr = var.subnet2_cidr
 }
-
-
-# # jmh-azure/main.tf
 
 module "databricks" {
   source              = "./modules/databricks"
@@ -26,7 +21,6 @@ module "databricks" {
   environment         = var.environment
   sku                 = "premium"
 }
-
 
 module "adls_gen2" {
   source               = "./modules/storage/adls_gen2"
@@ -42,5 +36,3 @@ module "adls_gen2" {
   # Databricks 워크스페이스 ID 전달
   databricks_principal_id = var.databricks_principal_id
 }
-
-

@@ -1,4 +1,3 @@
-
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-${var.environment}-${var.rg_name}"
   location = var.location
@@ -40,6 +39,3 @@ resource "azurerm_subnet" "subnet2" {
     }
   }
 }
-
-
-
