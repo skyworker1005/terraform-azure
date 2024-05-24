@@ -18,42 +18,70 @@ variable "environment" {
 variable "vnet_name" {
   description = "The name of the virtual network."
   type        = string
-  default = "VNET"
+  default     = "VNET"
 }
 
 variable "vnet_cidr" {
   description = "CIDR block for the virtual network."
   type        = string
-  default = "10.0.0.0/16"
+  default     = "10.0.0.0/16"
 }
 
-variable "subnet1_name" {
-  description = "The name of the first subnet."
+variable "public_subnet_name" {
+  description = "The name of the public subnet."
   type        = string
-  default = "PUBLIC"
+  default     = "PUBLIC"
 }
 
-variable "subnet1_cidr" {
-  description = "CIDR block for the first subnet."
+variable "public_subnet_cidr" {
+  description = "CIDR block for the public subnet."
   type        = string
-  default = "10.0.1.0/24"
+  default     = "10.0.1.0/24"
 }
 
-variable "subnet2_name" {
-  description = "The name of the second subnet."
+variable "private_subnet_name" {
+  description = "The name of the private subnet."
   type        = string
-  default = "PRIVATE"
+  default     = "PRIVATE"
 }
 
-variable "subnet2_cidr" {
-  description = "CIDR block for the second subnet."
+variable "private_subnet_cidr" {
+  description = "CIDR block for the private subnet."
   type        = string
-  default = "10.0.2.0/24"
+  default     = "10.0.2.0/24"
+}
+
+variable "private_endpoint_subnet_name" {
+  description = "The name of the private endpoint subnet."
+  type        = string
+  default     = "PRIVATE_ENDPOINT"
+}
+
+variable "private_endpoint_subnet_cidr" {
+  description = "CIDR block for the private endpoint subnet."
+  type        = string
+  default     = "10.0.3.0/24"
+}
+
+variable "adls_subnet_name" {
+  description = "The name of the ADLS subnet."
+  type        = string
+  default     = "ADLS"
+}
+
+variable "adls_subnet_cidr" {
+  description = "CIDR block for the ADLS subnet."
+  type        = string
+  default     = "10.0.4.0/24"
 }
 
 variable "databricks_principal_id" {
   description = "databricks_principal_id"
   type        = string
-  //default = "ab9625a7-1b22-4c98-a9e0-fb5b361b0178"
-  default = "48e1c7f2-9858-407d-983c-11dea10e78f4"
+  default     = "48e1c7f2-9858-407d-983c-11dea10e78f4"
+}
+
+variable "databricks_token" {
+  description = "Databricks token for authentication"
+  type        = string
 }

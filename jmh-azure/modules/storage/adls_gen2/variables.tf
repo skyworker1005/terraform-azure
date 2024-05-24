@@ -6,13 +6,13 @@ variable "prefix" {
 variable "environment" {
   description = "The deployment environment (e.g., DEV, STG, PRD)."
   type        = string
-  default = "DEV"
+  default     = "DEV"
 }
 
 variable "rg_name" {
   description = "The resource group name suffix."
   type        = string
-  default = "STORAGE"
+  default     = "STORAGE"
 }
 
 variable "location" {
@@ -38,5 +38,15 @@ variable "tags" {
 
 variable "databricks_principal_id" {
   description = "databricks_principal_id"
+  type        = string
+}
+
+variable "private_subnet_id" {
+  description = "The private subnet id."
+  type        = string
+}
+
+variable "vnet_id" {
+  description = "The virtual network id."
   type        = string
 }

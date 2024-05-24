@@ -6,13 +6,13 @@ variable "prefix" {
 variable "environment" {
   description = "The deployment environment (e.g., DEV, STG, PRD)."
   type        = string
-  default = "DEV"
+  default     = "DEV"
 }
 
 variable "rg_name" {
   description = "The resource group name suffix."
   type        = string
-  default = "NETWORK"
+  default     = "NETWORK"
 }
 
 variable "location" {
@@ -30,26 +30,46 @@ variable "vnet_name" {
   type        = string
 }
 
-variable "subnet1_cidr" {
-  description = "CIDR block for the first subnet."
+variable "public_subnet_cidr" {
+  description = "CIDR block for the public subnet."
   type        = string
 }
 
-variable "subnet1_name" {
-  description = "The name of the first subnet."
+variable "public_subnet_name" {
+  description = "The name of the public subnet."
   type        = string
-  default = "PUBLIC"
+  default     = "PUBLIC"
 }
 
-variable "subnet2_cidr" {
-  description = "CIDR block for the second subnet."
+variable "private_subnet_cidr" {
+  description = "CIDR block for the private subnet."
   type        = string
 }
 
-variable "subnet2_name" {
-  description = "The name of the second subnet."
+variable "private_subnet_name" {
+  description = "The name of the private subnet."
   type        = string
-  default = "PRIVATE"
+  default     = "PRIVATE"
 }
 
+variable "private_endpoint_subnet_cidr" {
+  description = "CIDR block for the private endpoint subnet."
+  type        = string
+}
 
+variable "private_endpoint_subnet_name" {
+  description = "The name of the private endpoint subnet."
+  type        = string
+  default     = "PRIVATE_ENDPOINT"
+}
+
+variable "adls_subnet_cidr" {
+  description = "CIDR block for the ADLS subnet."
+  type        = string
+}
+
+variable "adls_subnet_name" {
+  description = "The name of the ADLS subnet."
+  type        = string
+  default     = "ADLS"
+}

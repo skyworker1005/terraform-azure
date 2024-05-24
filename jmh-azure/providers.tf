@@ -16,10 +16,7 @@ terraform {
       version = "~> 1.0"
     }
   }
-  
 }
-
-
 
 provider "azurerm" {
   features {
@@ -34,7 +31,13 @@ provider "azurerm" {
   client_secret     = "qjJ8Q~tHgsWx39O2ClSSsHMgOIgCG3FUp32cdcEY"
 }
 
-# remote state 
+provider "databricks" {
+  alias = "main"
+  host  = azurerm_databricks_workspace.dbworkspace.workspace_url
+  token = var.databricks_token
+}
+
+# remote state
 resource "random_string" "resource_code" {
   length  = 5
   special = false
@@ -47,7 +50,6 @@ resource "azurerm_resource_group" "tfstate" {
 }
 
 resource "azurerm_storage_account" "tfstate" {
-  #name                     = "tfstate${random_string.resource_code.result}"
   name                     = "tfstatesakdp"
   resource_group_name      = azurerm_resource_group.tfstate.name
   location                 = azurerm_resource_group.tfstate.location
