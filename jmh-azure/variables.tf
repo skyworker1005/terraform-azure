@@ -85,3 +85,24 @@ variable "databricks_token" {
   description = "Databricks token for authentication"
   type        = string
 }
+
+variable "databricks_host" {
+  description = "Databricks token for authentication"
+  type        = string
+}
+
+
+
+
+
+variable "token_name" {
+  description = "A prefix used to name the resources."
+  type        = string
+  default     = "kdptoken"
+}
+
+variable "token_lifetime_days" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}

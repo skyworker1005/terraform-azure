@@ -10,6 +10,7 @@ terraform {
     }
     databricks = {
       source = "databricks/databricks"
+      version = "~>1.0.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -33,8 +34,9 @@ provider "azurerm" {
 
 provider "databricks" {
   alias = "main"
-  host  = azurerm_databricks_workspace.dbworkspace.workspace_url
+  host  = var.databricks_host
   token = var.databricks_token
+  
 }
 
 # remote state

@@ -20,15 +20,15 @@ variable "location" {
   type        = string
 }
 
-variable "storage_account_name" {
-  type        = string
-  description = "The name of the storage account to create."
-}
+# variable "storage_account_name" {
+#   type        = string
+#   description = "The name of the storage account to create."
+# }
 
-variable "filesystem_name" {
-  type        = string
-  description = "The name of the filesystem to create in the storage account."
-}
+# variable "filesystem_name" {
+#   type        = string
+#   description = "The name of the filesystem to create in the storage account."
+# }
 
 variable "tags" {
   type        = map(string)
