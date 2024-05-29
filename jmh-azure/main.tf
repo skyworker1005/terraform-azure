@@ -29,10 +29,10 @@ module "kdp_databricks_workspace" {
 }
 
 
-module "kdp_databricks_token" {
-  source                   = "./modules/databricks/token"
-  databricks_host          = module.kdp_databricks_workspace.databricks_host
-}
+# module "kdp_databricks_token" {
+#   source                   = "./modules/databricks/token"
+#   databricks_host          = module.kdp_databricks_workspace.databricks_host
+# }
 
 
 module "databricks_cluster" {
@@ -42,10 +42,10 @@ module "databricks_cluster" {
     spark_version = "7.3.x-scala2.12"
     node_type_id = "Standard_DS3_v2"
     autotermination_minutes = 20
-    databricks_token = module.kdp_databricks_token.databricks_token_value
+    #databricks_token = module.kdp_databricks_token.databricks_token_value
+    databricks_token = var.databricks_token
+    databricks_host          = module.kdp_databricks_workspace.databricks_host
 }
-
-
 
 
 
@@ -63,4 +63,7 @@ module "kdp_adls_gen2" {
   vnet_id                   = module.kdp_network.vnet_id
   private_subnet_id         = module.kdp_network.adls_subnet_id
   databricks_principal_id   = var.databricks_principal_id
+  access_connector_name     = var.access_connector_name
+  azurerm_storage_container = var.azurerm_storage_container
+  metastore_storage_name   = var.metastore_storage_name
 }

@@ -35,3 +35,9 @@ variable "databricks_token" {
     type        = string
     default     = "module.kdp_databricks_token.databricks_token_value"
 }
+
+variable "databricks_host" {
+    description = "The Databricks token"
+    type        = string
+    default     = "module.kdp_databricks_token.databricks_token_value"
+}

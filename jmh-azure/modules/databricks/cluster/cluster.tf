@@ -9,6 +9,11 @@ terraform {
 
 
 
+provider "databricks" {
+  host  = var.databricks_host
+  token = var.databricks_token
+}
+
 resource "databricks_cluster" "this" {
     cluster_name = var.cluster_name
     spark_version = var.spark_version

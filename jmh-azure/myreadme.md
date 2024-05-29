@@ -354,3 +354,7 @@ terraform import azurerm_resource_group.tfstate /subscriptions/5f918871-6ae3-44a
 
 --- 
 ## 5/10(Fri)
+
+
+# 5/29
+databricks configure --token

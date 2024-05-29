@@ -15,7 +15,6 @@ terraform {
 # }
 
 resource "databricks_token" "token" {
-  
   comment          = var.token_name
   lifetime_seconds = var.token_lifetime_days * 24 * 60 * 60
 }

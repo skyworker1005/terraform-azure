@@ -89,6 +89,7 @@ variable "databricks_token" {
 variable "databricks_host" {
   description = "Databricks token for authentication"
   type        = string
+  default = "https://adb-4425577002104615.15.azuredatabricks.net"
 }
 
 
@@ -106,3 +107,25 @@ variable "token_lifetime_days" {
   type        = string
   default     = "2"
 }
+
+
+variable "access_connector_name" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}
+
+
+variable "metastore_storage_name" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}
+
+variable "azurerm_storage_container" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}
+
+

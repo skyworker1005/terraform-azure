@@ -50,3 +50,20 @@ variable "vnet_id" {
   description = "The virtual network id."
   type        = string
 }
+
+
+
+variable "access_connector_name" {
+  description = "The name of the Databricks access connector"
+  type        = string
+}
+
+variable "metastore_storage_name" {
+  description = "The name of the storage account for the Unity Catalog"
+  type        = string
+}
+
+variable "azurerm_storage_container" {
+  description = "The name of the storage container for the Unity Catalog"
+  type        = string
+}
