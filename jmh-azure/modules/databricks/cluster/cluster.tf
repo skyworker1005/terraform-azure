@@ -10,8 +10,10 @@ terraform {
 
 
 provider "databricks" {
-  host  = var.databricks_host
+  #host  = var.databricks_host
+  #host = "https://${azurerm_databricks_workspace.dbworkspace.workspace_url}/"
   token = var.databricks_token
+  host = var.databricks_host
 }
 
 resource "databricks_cluster" "this" {
@@ -20,6 +22,7 @@ resource "databricks_cluster" "this" {
     node_type_id = var.node_type_id
     autotermination_minutes = var.autotermination_minutes
     num_workers = 1
+    
 
     custom_tags = {
         "ResourceClass" = "SingleNode"

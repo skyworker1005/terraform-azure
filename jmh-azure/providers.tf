@@ -32,12 +32,11 @@ provider "azurerm" {
   client_secret = var.terraform_client_secret
 }
 
-provider "databricks" {
-  alias = "main"
-  host  = var.databricks_host
-  token = var.databricks_token
-  
-}
+# provider "databricks" {
+#   alias = "main"
+#  # host  = var.databricks_host
+#   token = var.databricks_token
+# }
 
 # remote state
 resource "random_string" "resource_code" {

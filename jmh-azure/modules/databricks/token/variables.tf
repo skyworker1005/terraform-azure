@@ -38,3 +38,4 @@ variable "token_lifetime_days" {
   type        = string
   default     = "2"
 }
+

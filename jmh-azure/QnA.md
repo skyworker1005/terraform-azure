@@ -1,5 +1,6 @@
 
 
+
 # to-do
 ## 1. 
 databricks_host, databricks_token 값을 셋팅하기 위해 terraform을 2번 실행하게 된다. 
@@ -7,7 +8,7 @@ databricks_host, databricks_token 값을 셋팅하기 위해 terraform을 2번 �
 
 ## 2. 
 terraform은 Service Principal 을 사용했다. 
-databricks 도 Service Principal 로 했는데, Managed Identity 로 변경해야 하나? 
+databricks 도 Service Principal 로 했는데, Managed Identity 로 변경하는 쪽으로 계획 중.. 
 
 |Display name|Application (client) ID|Created on|Certificates & secrets|
 |---|---|---|---|
@@ -15,4 +16,5 @@ databricks 도 Service Principal 로 했는데, Managed Identity 로 변경해�
 |KD kdp-terraform  | 61c8285a-8bc7-4d60-a13d-f21e12d4b627 |4/17/2024|Current|
 
 ## 3. 
-Unity Catalog 
+databricks workspace 생성 중에 Unity Catalog 을 사용하는 것으로 설정하는 테스트 진행 
+

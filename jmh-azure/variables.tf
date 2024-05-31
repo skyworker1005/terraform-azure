@@ -86,11 +86,11 @@ variable "databricks_token" {
   type        = string
 }
 
-variable "databricks_host" {
-  description = "Databricks token for authentication"
-  type        = string
-  default = "https://adb-4425577002104615.15.azuredatabricks.net"
-}
+# variable "databricks_host" {
+#   description = "Databricks token for authentication"
+#   type        = string
+#   default = "https://adb-4425577002104615.15.azuredatabricks.net"
+# }
 
 
 
