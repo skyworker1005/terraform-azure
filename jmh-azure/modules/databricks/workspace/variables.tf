@@ -74,3 +74,9 @@ variable "private_endpoint_subnet_id" {
   description = "Private endpoint subnet id from network module."
   type        = string
 }
+
+variable "enable_unity_catalog" {
+  description = "Private endpoint subnet id from network module."
+  type        = bool
+  default     = true
+}

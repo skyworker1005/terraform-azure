@@ -129,3 +129,24 @@ variable "azurerm_storage_container" {
 }
 
 
+
+variable "terraform_client_id" {
+  description = "Terraform Service Principal id."
+  type        = string
+}
+
+variable "terraform_client_secret" {
+  description = "Terraform Service Principal secret."
+  type        = string
+}
+
+
+variable "subscription_id" {
+  description = "subscription_id for Terraform."
+  type        = string
+}
+
+variable "tenant_id" {
+  description = "tenant_id For Terraform "
+  type        = string
+}

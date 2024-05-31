@@ -26,10 +26,10 @@ provider "azurerm" {
     }
   }
 
-  subscription_id   = "5f918871-6ae3-44a3-80dc-ba82deaf3190"
-  tenant_id         = "1fd5ae1e-3b59-4db5-a2c5-5764441925b9"
-  client_id         = "61c8285a-8bc7-4d60-a13d-f21e12d4b627"
-  client_secret     = "qjJ8Q~tHgsWx39O2ClSSsHMgOIgCG3FUp32cdcEY"
+  subscription_id   = var.subscription_id
+  tenant_id         = var.tenant_id
+  client_id         = var.terraform_client_id
+  client_secret = var.terraform_client_secret
 }
 
 provider "databricks" {

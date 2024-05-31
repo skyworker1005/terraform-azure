@@ -35,17 +35,17 @@ module "kdp_databricks_workspace" {
 # }
 
 
-module "databricks_cluster" {
-    source = "./modules/databricks/cluster"
+# module "databricks_cluster" {
+#     source = "./modules/databricks/cluster"
 
-    cluster_name = "my-cluster"
-    spark_version = "7.3.x-scala2.12"
-    node_type_id = "Standard_DS3_v2"
-    autotermination_minutes = 20
-    #databricks_token = module.kdp_databricks_token.databricks_token_value
-    databricks_token = var.databricks_token
-    databricks_host          = module.kdp_databricks_workspace.databricks_host
-}
+#     cluster_name = "my-cluster"
+#     spark_version = "7.3.x-scala2.12"
+#     node_type_id = "Standard_DS3_v2"
+#     autotermination_minutes = 20
+#     #databricks_token = module.kdp_databricks_token.databricks_token_value
+#     databricks_token = var.databricks_token
+#     databricks_host          = module.kdp_databricks_workspace.databricks_host
+# }
 
 
 

@@ -1,3 +1,8 @@
+
+KDP 를 terraform module 을 이용해서 만들고 있다.
+현재 network, databricks, adls gen2 등을 만들었다. 
+나의 코드를 분석해서 정리해줘 
+
 # /Users/mhjung/GitHub/terraform-azure/jmh-azure/providers.tf
 ```
 terraform {
@@ -12,13 +17,13 @@ terraform {
     }
     databricks = {
       source = "databricks/databricks"
+      version = "~>1.0.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
       version = "~> 1.0"
     }
   }
-  
 }
 
 provider "azurerm" {
@@ -34,7 +39,14 @@ provider "azurerm" {
   client_secret     = "qjJ8Q~tHgsWx39O2ClSSsHMgOIgCG3FUp32cdcEY"
 }
 
-# remote state 
+provider "databricks" {
+  alias = "main"
+  host  = var.databricks_host
+  token = var.databricks_token
+  
+}
+
+# remote state
 resource "random_string" "resource_code" {
   length  = 5
   special = false
@@ -47,7 +59,6 @@ resource "azurerm_resource_group" "tfstate" {
 }
 
 resource "azurerm_storage_account" "tfstate" {
-  #name                     = "tfstate${random_string.resource_code.result}"
   name                     = "tfstatesakdp"
   resource_group_name      = azurerm_resource_group.tfstate.name
   location                 = azurerm_resource_group.tfstate.location
@@ -64,7 +75,8 @@ resource "azurerm_storage_container" "tfstate" {
   name                  = "tfstate"
   storage_account_name  = azurerm_storage_account.tfstate.name
   container_access_type = "private"
-}```
+}
+```
 
 # /Users/mhjung/GitHub/terraform-azure/jmh-azure/variables.tf
 ```
@@ -150,6 +162,55 @@ variable "databricks_principal_id" {
   type        = string
   default     = "48e1c7f2-9858-407d-983c-11dea10e78f4"
 }
+
+variable "databricks_token" {
+  description = "Databricks token for authentication"
+  type        = string
+}
+
+variable "databricks_host" {
+  description = "Databricks token for authentication"
+  type        = string
+  default = "https://adb-4425577002104615.15.azuredatabricks.net"
+}
+
+
+
+
+
+variable "token_name" {
+  description = "A prefix used to name the resources."
+  type        = string
+  default     = "kdptoken"
+}
+
+variable "token_lifetime_days" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}
+
+
+variable "access_connector_name" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}
+
+
+variable "metastore_storage_name" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}
+
+variable "azurerm_storage_container" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "2"
+}
+
+
 ```
 
 # /Users/mhjung/GitHub/terraform-azure/jmh-azure/terraform.tfvars
@@ -157,6 +218,7 @@ variable "databricks_principal_id" {
 prefix                       = "KDP"
 location                     = "koreacentral"
 environment                  = "DEV"
+
 vnet_name                    = "VNET"
 vnet_cidr                    = "10.0.0.0/16"
 public_subnet_name           = "PUBLIC"
@@ -167,18 +229,164 @@ private_endpoint_subnet_name = "PRIVATE_ENDPOINT"
 private_endpoint_subnet_cidr = "10.0.3.0/24"
 adls_subnet_name             = "ADLS"
 adls_subnet_cidr             = "10.0.4.0/24"
+
 databricks_principal_id      = "48e1c7f2-9858-407d-983c-11dea10e78f4"
-databricks_token             = "dapi05c541ea84703d273ed3f0d5abb584c7"
+databricks_token             = "dapie526d3e8cabc0cd9eee33994f4becc0d"
+databricks_host              = "https://adb-4425577002104615.15.azuredatabricks.net"
+
+access_connector_name        = "KDP-ADLS-AC"
+metastore_storage_name       = "kdpmetastore"
+azurerm_storage_container    = "kdpcatalog"```
+
+# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/network/network.tf
+```
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.prefix}-${var.environment}-${var.rg_name}"
+  location = var.location
+}
+
+resource "azurerm_virtual_network" "vnet" {
+  name                = "${var.prefix}-${var.vnet_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  address_space       = [var.vnet_cidr]
+}
+
+# Public Subnet
+resource "azurerm_subnet" "public_subnet" {
+  name                 = "${var.prefix}-${var.public_subnet_name}"
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+  address_prefixes     = [var.public_subnet_cidr]
+
+  delegation {
+    name = "databricks_delegation"
+
+    service_delegation {
+      name = "Microsoft.Databricks/workspaces"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/action",
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
+      ]
+    }
+  }
+}
+
+# Private Subnet
+resource "azurerm_subnet" "private_subnet" {
+  name                 = "${var.prefix}-${var.private_subnet_name}"
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+  address_prefixes     = [var.private_subnet_cidr]
+
+  delegation {
+    name = "databricks_delegation"
+    service_delegation {
+      name = "Microsoft.Databricks/workspaces"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/action",
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
+      ]
+    }
+  }
+}
+
+
+# Private Endpoint Subnet
+resource "azurerm_subnet" "private_endpoint_subnet" {
+  name                 = "${var.prefix}-${var.private_endpoint_subnet_name}"
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+  address_prefixes     = [var.private_endpoint_subnet_cidr]
+}
+
+
+# ADLS Subnet
+resource "azurerm_subnet" "adls_subnet" {
+  name                 = "${var.prefix}-${var.adls_subnet_name}"
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+  address_prefixes     = [var.adls_subnet_cidr]
+}
 ```
 
-# /Users/mhjung/GitHub/terraform-azure/jmh-azure/network/main.tf not found
+# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/network/variables.tf
 ```
-File not found.
-```
+variable "prefix" {
+  description = "A prefix used to name the resources."
+  type        = string
+}
 
-# /Users/mhjung/GitHub/terraform-azure/jmh-azure/network/variables.tf not found
-```
-File not found.
+variable "environment" {
+  description = "The deployment environment (e.g., DEV, STG, PRD)."
+  type        = string
+  default     = "DEV"
+}
+
+variable "rg_name" {
+  description = "The resource group name suffix."
+  type        = string
+  default     = "NETWORK"
+}
+
+variable "location" {
+  description = "The Azure region where resources will be created."
+  type        = string
+}
+
+variable "vnet_cidr" {
+  description = "CIDR block for the virtual network."
+  type        = string
+}
+
+variable "vnet_name" {
+  description = "The name of the virtual network."
+  type        = string
+}
+
+variable "public_subnet_cidr" {
+  description = "CIDR block for the public subnet."
+  type        = string
+}
+
+variable "public_subnet_name" {
+  description = "The name of the public subnet."
+  type        = string
+  default     = "PUBLIC"
+}
+
+variable "private_subnet_cidr" {
+  description = "CIDR block for the private subnet."
+  type        = string
+}
+
+variable "private_subnet_name" {
+  description = "The name of the private subnet."
+  type        = string
+  default     = "PRIVATE"
+}
+
+variable "private_endpoint_subnet_cidr" {
+  description = "CIDR block for the private endpoint subnet."
+  type        = string
+}
+
+variable "private_endpoint_subnet_name" {
+  description = "The name of the private endpoint subnet."
+  type        = string
+  default     = "PRIVATE_ENDPOINT"
+}
+
+variable "adls_subnet_cidr" {
+  description = "CIDR block for the ADLS subnet."
+  type        = string
+}
+
+variable "adls_subnet_name" {
+  description = "The name of the ADLS subnet."
+  type        = string
+  default     = "ADLS"
+}
 ```
 
 # /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/network/nsg.tf
@@ -281,10 +489,137 @@ output "nsg_association_public_subnet" {
 output "nsg_association_private_subnet" {
   value = azurerm_subnet_network_security_group_association.nsg_association_private_subnet.id
 }
-```
 
-# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/databricks.tf
+output "public_subnet_name" {
+  value = azurerm_subnet.public_subnet.name
+}
+
+output "private_subnet_name" {
+  value = azurerm_subnet.private_subnet.name
+}
+
+output "private_endpoint_subnet_name" {
+  value = azurerm_subnet.private_endpoint_subnet.name
+}
+
+output "adls_subnet_name" {
+  value = azurerm_subnet.adls_subnet.name
+}```
+
+# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/cluster/cluster.tf
 ```
+terraform {
+    required_providers {
+        databricks = {
+            source = "databricks/databricks"
+            // ...
+        }
+    }
+}
+
+
+
+provider "databricks" {
+  host  = var.databricks_host
+  token = var.databricks_token
+}
+
+resource "databricks_cluster" "this" {
+    cluster_name = var.cluster_name
+    spark_version = var.spark_version
+    node_type_id = var.node_type_id
+    autotermination_minutes = var.autotermination_minutes
+    num_workers = 1
+
+    custom_tags = {
+        "ResourceClass" = "SingleNode"
+    }
+
+    spark_conf = {
+        "spark.speculation" = "true"
+        "spark.databricks.optimizer.enabled" = "true"
+    }
+
+    azure_attributes {
+        availability = "ON_DEMAND"
+        first_on_demand = 1
+        spot_bid_max_price = -1.0
+    }
+}```
+
+# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/cluster/variables.tf
+```
+/*
+    cluster_name = "my-cluster"
+    spark_version = "7.3.x-scala2.12"
+    node_type_id = "Standard_DS3_v2"
+    autotermination_minutes = 20
+    databricks_token = module.kdp_databricks_token.databricks_token_value
+*/
+
+variable "cluster_name" {
+    description = "The name of the cluster"
+    type        = string
+    default     = "my-cluster"
+}
+
+variable "spark_version" {
+    description = "The version of Spark to use"
+    type        = string
+    default     = "7.3.x-scala2.12"
+}
+
+variable "node_type_id" {
+    description = "The node type id"
+    type        = string
+    default     = "Standard_DS3_v2"
+}
+
+variable "autotermination_minutes" {
+    description = "The autotermination minutes"
+    type        = number
+    default     = 20
+}
+
+variable "databricks_token" {
+    description = "The Databricks token"
+    type        = string
+    default     = "module.kdp_databricks_token.databricks_token_value"
+}
+
+variable "databricks_host" {
+    description = "The Databricks token"
+    type        = string
+    default     = "module.kdp_databricks_token.databricks_token_value"
+}```
+
+# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/workspace/workspace.tf
+```
+# terraform {
+#   required_providers {
+#     azurerm = {
+#       source  = "hashicorp/azurerm"
+#       version = "~>3.0"
+#     }
+#     databricks = {
+#       source  = "databricks/databricks"
+#       version = "~>1.0.0"
+#     }
+#   }
+# }
+
+# provider "azurerm" {
+#   features {}
+# }
+
+# provider "databricks" {
+#   alias = "main"
+#   //host  = "https://${var.databricks_workspace_name}.azuredatabricks.net"
+#   host = azurerm_databricks_workspace.this.workspace_url
+#   //token = var.databricks_pat_token
+# }
+
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-${var.environment}-${var.rg_name}"
   location = var.location
@@ -311,7 +646,6 @@ resource "azurerm_databricks_workspace" "dbworkspace" {
     var.nsg_association2
   ]
 }
-
 
 resource "azurerm_private_endpoint" "databricks_control_plane" {
   name                = "${var.prefix}-control-plane-pe"
@@ -366,9 +700,67 @@ resource "azurerm_private_dns_a_record" "databricks_compute_a_record" {
   ttl                 = 300
   records             = [azurerm_private_endpoint.databricks_compute_plane.private_service_connection[0].private_ip_address]
 }
-```
 
-# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/variables.tf
+
+
+# resource "databricks_token" "this" {
+#   provider = databricks.main
+#   comment  = "Terraform managed token"
+#   lifetime_seconds = 31536000
+# }
+
+# resource "databricks_cluster" "example_cluster" {
+#   provider = databricks.main
+#   cluster_name            = "example-cluster"
+#   spark_version           = "7.3.x-scala2.12"
+#   node_type_id            = "Standard_D3_v2"
+#   autotermination_minutes = 20
+#   num_workers             = 2
+# }
+
+
+
+// to-do 
+/*
+azurerm_databricks_access_connector는 Terraform에서 Azure Databricks와 Azure Active Directory(AD)를 통합하여 Databricks 자원에 대한 접근 관리를 간소화하는 리소스
+이를 통해 Azure AD를 사용하여 Databricks 작업공간 및 자원에 대한 사용자의 접근과 권한을 관리할 수 있음 
+주요 특징
+- Azure AD 통합: Azure AD를 사용하여 Databricks에 대한 인증 및 인가를 관리할 수 있습니다.
+- 향상된 보안: Azure의 보안 기능을 활용하여 Databricks 자원을 안전하게 보호할 수 있습니다.
+- 간편한 접근 관리: Databricks 작업공간 및 자원에 대한 접근 관리를 간편하게 수행할 수 있습니다.
+
+*/
+/*
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "East US"
+}
+
+resource "azurerm_databricks_workspace" "example" {
+  name                = "example-databricks"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  sku                 = "standard"
+}
+
+resource "azurerm_databricks_access_connector" "example" {
+  name                    = "example-connector"
+  resource_group_name     = azurerm_resource_group.example.name
+  location                = azurerm_resource_group.example.location
+  databricks_workspace_id = azurerm_databricks_workspace.example.id
+}
+
+output "databricks_access_connector_id" {
+  value = azurerm_databricks_access_connector.example.id
+}
+
+*/```
+
+# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/workspace/variables.tf
 ```
 variable "location" {
   description = "The Azure location where all resources in this example should be created"
@@ -448,7 +840,7 @@ variable "private_endpoint_subnet_id" {
 }
 ```
 
-# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/outputs.tf
+# /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/databricks/workspace/outputs.tf
 ```
 # output "public_subnet_name" {
 #   value = var.public_subnet_name
@@ -462,11 +854,23 @@ output "virtual_network_id" {
   value = var.vnet_id
 }
 
-output "dbworkspace_id" {
+output "databricks_workspace_id" {
   value       = azurerm_databricks_workspace.dbworkspace.id
   description = "The ID of the Databricks workspace."
 }
-```
+
+output "databricks_workspace_url" {
+  value = azurerm_databricks_workspace.dbworkspace.workspace_url
+}
+
+output "databricks_host" {
+  //value = azurerm_databricks_workspace.dbworkspace.workspace_url
+  value = "https://${azurerm_databricks_workspace.dbworkspace.workspace_url}/"
+}
+
+# output "databricks_token" {
+#   value = databricks_token.token.token_value
+# }```
 
 # /Users/mhjung/GitHub/terraform-azure/jmh-azure/modules/storage/adls_gen2/adls_gen2.tf
 ```
@@ -576,15 +980,15 @@ variable "location" {
   type        = string
 }
 
-variable "storage_account_name" {
-  type        = string
-  description = "The name of the storage account to create."
-}
+# variable "storage_account_name" {
+#   type        = string
+#   description = "The name of the storage account to create."
+# }
 
-variable "filesystem_name" {
-  type        = string
-  description = "The name of the filesystem to create in the storage account."
-}
+# variable "filesystem_name" {
+#   type        = string
+#   description = "The name of the filesystem to create in the storage account."
+# }
 
 variable "tags" {
   type        = map(string)
@@ -604,6 +1008,23 @@ variable "private_subnet_id" {
 
 variable "vnet_id" {
   description = "The virtual network id."
+  type        = string
+}
+
+
+
+variable "access_connector_name" {
+  description = "The name of the Databricks access connector"
+  type        = string
+}
+
+variable "metastore_storage_name" {
+  description = "The name of the storage account for the Unity Catalog"
+  type        = string
+}
+
+variable "azurerm_storage_container" {
+  description = "The name of the storage container for the Unity Catalog"
   type        = string
 }
 ```
@@ -655,4 +1076,6 @@ output "gold_filesystem_name" {
   description = "The name of the Gold data lake filesystem."
 }
 ```
+
+
 
