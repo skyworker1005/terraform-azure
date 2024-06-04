@@ -1,3 +1,6 @@
 .terraform/
 *.tfstate*
 venv-jmh-azure/
+.vscode/
+.databricks/
+test1/
