@@ -15,7 +15,7 @@ resource "azurerm_storage_account" "unity_catalog" {
   resource_group_name = azurerm_resource_group.rg.name
   tags                     = var.tags
   account_tier             = "Standard"
-  account_replication_type = "GRS"
+  account_replication_type = var.account_replication_type
   is_hns_enabled           = true
 }
 
@@ -32,6 +32,21 @@ locals {
     "EventGrid EventSubscription Contributor",
   ]
 }
+
+resource "azurerm_storage_data_lake_gen2_filesystem" "unity_catalog_fs" {
+  name               = var.azurerm_storage_container
+  storage_account_id = azurerm_storage_account.unity_catalog.id
+}
+
+
+# resource "databricks_metastore" "unity_catalog" {
+#   name             = "${var.prefix}-metastore"
+#   storage_root     = "abfss://${azurerm_storage_container.unity_catalog.name}@${azurerm_storage_account.unity_catalog.name}.dfs.core.windows.net/"
+#   force_destroy    = true
+#   //comment          = "Unity Catalog Metastore for Databricks"
+# }
+
+
 
 resource "azurerm_role_assignment" "unity_catalog" {
   for_each             = toset(local.uc_roles)

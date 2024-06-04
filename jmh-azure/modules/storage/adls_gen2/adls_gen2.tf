@@ -10,7 +10,7 @@ resource "azurerm_storage_account" "sa" {
   location                 = azurerm_resource_group.rg.location
   account_kind             = "StorageV2"
   account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_replication_type = var.account_replication_type
   is_hns_enabled           = true
   tags = {
     environment = var.environment

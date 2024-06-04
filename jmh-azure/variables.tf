@@ -15,6 +15,13 @@ variable "environment" {
   default     = "DEV"
 }
 
+variable "databricks_rg_name" {
+  description = "The name of the resource group for Databricks."
+  type        = string
+  default     = "DATABRICKS"
+  
+}
+
 variable "vnet_name" {
   description = "The name of the virtual network."
   type        = string
@@ -149,4 +156,13 @@ variable "subscription_id" {
 variable "tenant_id" {
   description = "tenant_id For Terraform "
   type        = string
+}
+
+variable "unity_catalog_name" {
+  description = "unity_catalog_name"
+  type        = string
+}
+variable "unity_catalog_metastore_name" {
+  description = "unity_catalog_metastore_name"
+  type        = string    
 }

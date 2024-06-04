@@ -43,6 +43,7 @@ resource "azurerm_databricks_workspace" "dbworkspace" {
     virtual_network_id                                   = var.vnet_id
     public_subnet_name                                   = var.public_subnet_name
     private_subnet_name                                  = var.private_subnet_name
+    //enable_unity_catalog = true
 
   }
   depends_on = [

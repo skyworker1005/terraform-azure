@@ -42,3 +42,15 @@ output "gold_filesystem_name" {
   value       = azurerm_storage_data_lake_gen2_filesystem.gold.name
   description = "The name of the Gold data lake filesystem."
 }
+
+
+
+output "unity_catalog_storage_account_name" {
+  value       = azurerm_storage_account.unity_catalog.name
+  description = "The name of the Unity Catalog storage account."
+}
+
+output "unity_catalog_storage_container_name" {
+  value       = azurerm_storage_container.unity_catalog.name
+  description = "The name of the Unity Catalog storage container."
+}

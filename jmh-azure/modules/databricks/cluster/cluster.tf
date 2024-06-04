@@ -31,6 +31,7 @@ resource "databricks_cluster" "this" {
     spark_conf = {
         "spark.speculation" = "true"
         "spark.databricks.optimizer.enabled" = "true"
+        "spark.databricks.delta.preview.enabled" = "true"  // Photon을 활성화
     }
 
     azure_attributes {

@@ -67,3 +67,10 @@ variable "azurerm_storage_container" {
   description = "The name of the storage container for the Unity Catalog"
   type        = string
 }
+
+variable "account_replication_type" {
+  description = "The replication type for the storage account."
+  type        = string
+  default     = "LRS"
+  
+}

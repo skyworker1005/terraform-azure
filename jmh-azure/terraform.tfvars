@@ -2,6 +2,8 @@ prefix                       = "KDP"
 location                     = "koreacentral"
 environment                  = "DEV"
 
+databricks_rg_name           = "DATABRICKS"
+
 vnet_name                    = "VNET"
 vnet_cidr                    = "10.0.0.0/16"
 public_subnet_name           = "PUBLIC"
@@ -24,3 +26,6 @@ adls_subnet_cidr             = "10.0.4.0/24"
 access_connector_name        = "KDP-ADLS-AC"
 metastore_storage_name       = "kdpmetastore"
 azurerm_storage_container    = "kdpcatalog"
+
+unity_catalog_name = "kdpunitycatalog"
+unity_catalog_metastore_name = "kdpunitycatalogmetastore"
