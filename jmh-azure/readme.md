@@ -6,13 +6,13 @@
 ## Azure Cloud 환경 구성 
 - Hub & Spoke network 환경에서 Data Platform 과 관련된 azure cloud 환경 구성 
   - private network 환경으로만 구성 예정 
-  - vnet, subnet, storage, private endpoint, vnet peering, ad 연계 등  
+  - vnet, subnet, storage, private endpoint, vnet peering, Azure Key Vault, ad 연계 등  
 ## Data Analytics 환경 구성 
-  1. Dedicated Zone 
+  1. Dedicated Zone 2개 
      - ADF, ADLS Gen2, Databricks( workspace, cluster, token, sql warehouse)
      - Databricks 관련 구성 설정 
-  2. Shared Zone 
-     - ADLS Gen2, Synapse, AI/ML, API management, AKS
+  2. Shared Zone 1개 
+     - ADLS Gen2, Synapse, AI/ML, API management, AKS, Power BI 
 
 
 
@@ -66,4 +66,26 @@ export TF_VAR_terraform_client_secret="qjJ8Q~00000000000000000000"
     ➜  jmh-azure git:(main) ✗ 
     ``` 
 
+
+
+# 해야 할(해결해야할) 목록 
+- 1. terraform apply 1차에서는 에러발생, Azure Portal 에서 생성된 Databricks Workspace 에 로그인하고 나서 terraform apply 시도하면 에러 없이 완료 현상 
+token 생성 후 에러가 발생하는 부분도 README.md 에 있음.
+
+- 2. Unity Catalog을 별도 생성했다가, 아래 문서보고 workspace 생성시 기본적으로 생성되는것을 확인 했음
+https://registry.terraform.io/providers/databricks/databricks/latest/docs/guides/unity-catalog-default
+  생성된 Catalog Metastores의 metastore_azure_koreacentral 을 클릭하면, ADLS Gen 2 path 을 설정하는 화면이 나오는데, 아래 코드에서 미리 생성된 ADLS Gen 2 path  "kdpcatalog@kdpmetastore.dfs.core.windows.net/"을 선택하고 Update 하면 에러 메시지나 변경 사항 반영이 안됨. 
+   jmh-azure/modules/storage/adls_gen2/adls_gen2_catalog.tf
+
+- 3. vnet peering 
+  - Dedicate(2), Shared Zone은 Hub network 와 vnet peering 되어야 함.  
+
+- 4. Private Endpoint을 Hub private_endpoint_subnet 으로 변경해야 함
+  - 현재는, Dedicated Zone 에 private_endpoint_subnet 으로 되어 있음.  
+
+- 5. Shared Zone 구성 
+  - ADLS Gen2, Synapse, AI/ML, API management, AKS, Power BI 
+
+- 6. Dedicated Zone에 있는 Data -> Shared Zone Synapse DW  
+  - Shared Zone Synapse 에서 Dedicated Zone에 있는 gold data 가져오기 
 
