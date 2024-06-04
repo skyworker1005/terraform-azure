@@ -15,6 +15,7 @@
      - ADLS Gen2, Synapse, AI/ML, API management, AKS
 
 
+
 # 초기 필수 변수 값 셋팅 
 - macos 에서 zshr을 사용할 경우 
 vi ~/.zshrc 
