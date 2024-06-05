@@ -33,10 +33,10 @@ locals {
   ]
 }
 
-resource "azurerm_storage_data_lake_gen2_filesystem" "unity_catalog_fs" {
-  name               = var.azurerm_storage_container
-  storage_account_id = azurerm_storage_account.unity_catalog.id
-}
+# resource "azurerm_storage_data_lake_gen2_filesystem" "unity_catalog_fs" {
+#   name               = var.azurerm_storage_container
+#   storage_account_id = azurerm_storage_account.unity_catalog.id
+# }
 
 
 # resource "databricks_metastore" "unity_catalog" {

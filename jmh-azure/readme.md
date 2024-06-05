@@ -70,7 +70,6 @@ export TF_VAR_terraform_client_secret="qjJ8Q~00000000000000000000"
 
 # 해야 할(해결해야할) 목록 
 - 1. terraform apply 1차에서는 에러발생, Azure Portal 에서 생성된 Databricks Workspace 에 로그인하고 나서 terraform apply 시도하면 에러 없이 완료 현상 
-token 생성 후 에러가 발생하는 부분도 README.md 에 있음.
 
 - 2. Unity Catalog을 별도 생성했다가, 아래 문서보고 workspace 생성시 기본적으로 생성되는것을 확인 했음
 https://registry.terraform.io/providers/databricks/databricks/latest/docs/guides/unity-catalog-default
@@ -88,4 +87,7 @@ https://registry.terraform.io/providers/databricks/databricks/latest/docs/guides
 
 - 6. Dedicated Zone에 있는 Data -> Shared Zone Synapse DW  
   - Shared Zone Synapse 에서 Dedicated Zone에 있는 gold data 가져오기 
+
+- 7. Databricks AI/ML 구성 
+  - Dedicated Zone(2)에 Databricks AI/ML 구성 
 

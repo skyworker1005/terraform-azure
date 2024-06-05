@@ -21,7 +21,7 @@ resource "databricks_cluster" "this" {
     spark_version = var.spark_version
     node_type_id = var.node_type_id
     autotermination_minutes = var.autotermination_minutes
-    num_workers = 1
+    //num_workers = 1
     
 
     custom_tags = {
@@ -31,7 +31,8 @@ resource "databricks_cluster" "this" {
     spark_conf = {
         "spark.speculation" = "true"
         "spark.databricks.optimizer.enabled" = "true"
-        "spark.databricks.delta.preview.enabled" = "true"  // Photon을 활성화
+        //"spark.databricks.delta.preview.enabled" = "true"  // Photon을 활성화
+        "spark.databricks.delta.engine.enabled" = "true"  // Photon을 활성화
     }
 
     azure_attributes {
@@ -39,4 +40,10 @@ resource "databricks_cluster" "this" {
         first_on_demand = 1
         spot_bid_max_price = -1.0
     }
+
+    autoscale {
+        min_workers = 1
+        max_workers = 3
+    }
 }
+

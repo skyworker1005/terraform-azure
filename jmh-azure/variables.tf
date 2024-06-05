@@ -100,9 +100,6 @@ variable "databricks_token" {
 # }
 
 
-
-
-
 variable "token_name" {
   description = "A prefix used to name the resources."
   type        = string
@@ -165,4 +162,10 @@ variable "unity_catalog_name" {
 variable "unity_catalog_metastore_name" {
   description = "unity_catalog_metastore_name"
   type        = string    
+}
+variable "sql_warehouse_name" {
+  description = "sql_warehouse_name"
+  type        = string
+  default    = "kdpwarehouse"
+  
 }

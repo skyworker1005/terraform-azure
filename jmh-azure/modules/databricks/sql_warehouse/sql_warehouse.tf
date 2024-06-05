@@ -21,8 +21,4 @@ resource "databricks_sql_endpoint" "sql_warehouse" {
   enable_photon = var.enable_photon
   spot_instance_policy = var.spot_instance_policy
   //tags = var.tags
-
-  depends_on = [
-    databricks_cluster.this
-  ]
 }
