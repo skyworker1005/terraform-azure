@@ -1,0 +1,142 @@
+아래 코드는 azure databricks 관련 terraform module 이다. 아래 코드에 대해 설명해줘 
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/uc-idf-assignment/README-ko.md
+```
+# Unity Catalog 및 Identity Federation 할당
+
+이 모듈은 선택한 작업 공간에 Unity Catalog를 할당하고 Identity Federation을 활성화하는 데 사용되는 Terraform 코드를 포함하고 있습니다.
+
+## 모듈 내용
+
+이 모듈을 사용하여 다음 작업을 수행할 수 있습니다:
+
+* 지정된 작업 공간에 Unity Catalog 메타스토어 할당
+* 지정된 작업 공간에 그룹 및 서비스 주체 할당
+
+## 사용 방법
+
+> **참고**  
+> 이 모듈을 사용하는 배포 예제는 [examples/adb-lakehouse](../../examples/adb-lakehouse)에서 찾을 수 있습니다.
+
+1. 다양한 [모듈 소스 유형](https://developer.hashicorp.com/terraform/language/modules/sources)을 사용하여 이 모듈을 참조합니다.
+2. [variables.tf](variables.tf)와 동일한 내용을 포함하는 `variables.tf`를 추가합니다.
+3. `terraform.tfvars` 파일을 추가하고 정의된 각 변수에 값을 제공합니다.
+4. `output.tf` 파일을 추가합니다.
+5. (선택 사항) [원격 백엔드](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm)를 구성합니다.
+6. `terraform init`을 실행하여 Terraform을 초기화하고 제공자를 준비합니다.
+7. `terraform apply`를 실행하여 리소스를 생성합니다.
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/uc-idf-assignment/service-principals-workspace-assignment.tf
+```
+#Retrieve service principals from Databricks account
+data "databricks_service_principal" "sp" {
+  for_each       = var.service_principals
+  application_id = each.value["sp_id"]
+}
+
+resource "databricks_mws_permission_assignment" "sp-workspace-assignement" {
+  depends_on   = [data.databricks_service_principal.sp]
+  for_each     = var.service_principals
+  workspace_id = var.workspace_id
+  principal_id = data.databricks_service_principal.sp[each.key].sp_id
+  permissions  = each.value["permissions"]
+}
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/uc-idf-assignment/uc-assignment.tf
+```
+#this will assign the metastore to to the workspace
+resource "databricks_metastore_assignment" "this" {
+  metastore_id = var.metastore_id
+  workspace_id = var.workspace_id
+}```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/uc-idf-assignment/providers.tf
+```
+terraform {
+  required_providers {
+    databricks = {
+      source = "databricks/databricks"
+    }
+  }
+}```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/uc-idf-assignment/README.md
+```
+# Unity Catalog & Identity Federation assignment
+
+This module contains Terraform code used to assign Unity Catalog and enable Identity Federation on a selected workspace.
+
+## Module content
+
+This module can be used to perform following tasks:
+
+* Assign given Unity Catalog metastore to a specified workspace
+* Assign groups & service principals to a specified workspace
+
+## How to use
+
+> **Note**  
+> A deployment example using this module can be found in [examples/adb-lakehouse](../../examples/adb-lakehouse)
+
+1. Reference this module using one of the different [module source types](https://developer.hashicorp.com/terraform/language/modules/sources)
+2. Add a `variables.tf` with the same content in [variables.tf](variables.tf)
+3. Add a `terraform.tfvars` file and provide values to each defined variable
+4. Add a `output.tf` file.
+5. (Optional) Configure your [remote backend](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm)
+6. Run `terraform init` to initialize terraform and get provider ready.
+7. Run `terraform apply` to create the resources.
+
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/uc-idf-assignment/variables.tf
+```
+variable "metastore_id" {
+  type        = string
+  description = "The ID of Unity Catalog metastore"
+}
+
+variable "workspace_id" {
+  type        = string
+  description = "The ID of Databricks workspace"
+}
+
+variable "account_groups" {
+  type = map(object({
+    group_name  = string
+    permissions = list(string)
+  }))
+  default     = {}
+  description = "List of databricks account groups we want to assign to the workspace"
+}
+
+variable "service_principals" {
+  type = map(object({
+    sp_id        = string
+    display_name = optional(string)
+    permissions  = list(string)
+  }))
+  default     = {}
+  description = "List of account-level service principals we want to assign to the workspace"
+}
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/uc-idf-assignment/groups-workspace-assignment.tf
+```
+#retrieve existing AAD groups at Databricks account.
+#You would normally use AAD enterprise application to synch groups from AAD to databricks account: https://learn.microsoft.com/en-us/azure/databricks/administration-guide/users-groups/scim/aad
+data "databricks_group" "account_groups" {
+  for_each     = var.account_groups
+  display_name = each.value["group_name"]
+}
+
+resource "databricks_mws_permission_assignment" "groups-workspace-assignement" {
+  depends_on   = [data.databricks_group.account_groups]
+  for_each     = var.account_groups
+  workspace_id = var.workspace_id
+  principal_id = data.databricks_group.account_groups[each.key].id
+  permissions  = each.value["permissions"]
+}
+```
+

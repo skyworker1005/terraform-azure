@@ -41,10 +41,10 @@ variable "databricks_principal_id" {
   type        = string
 }
 
-variable "private_subnet_id" {
-  description = "The private subnet id."
-  type        = string
-}
+# variable "private_subnet_id" {
+#   description = "The private subnet id."
+#   type        = string
+# }
 
 variable "vnet_id" {
   description = "The virtual network id."
@@ -73,4 +73,15 @@ variable "account_replication_type" {
   type        = string
   default     = "LRS"
   
+}
+
+variable "private_endpoint_subnet_id" {
+  description = "The private endpoint subnet id."
+  type        = string
+}
+
+variable "dbfs_storage_account_name" {
+  description = "The name of the storage account for DBFS."
+  type        = string
+  default = "kdfdbfsstorage"  
 }

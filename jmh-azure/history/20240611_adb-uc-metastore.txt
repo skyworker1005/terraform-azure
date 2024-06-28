@@ -1,0 +1,202 @@
+아래 코드는 azure databrick 관련 terraform module code 이다 코드 분석해줘 
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/adb-uc-metastore/outputs.tf
+```
+output "metastore_id" {
+  value = databricks_metastore.databricks-metastore.id
+}
+
+output "access_connector_id" {
+  value       = azurerm_databricks_access_connector.access_connector.id
+  description = "the id of the access connector"
+}
+
+output "access_connector_principal_id" {
+  value       = azurerm_databricks_access_connector.access_connector.identity[0].principal_id
+  description = "The Principal ID of the System Assigned Managed Service Identity that is configured on this Access Connector"
+}
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/adb-uc-metastore/uc-metastore.tf
+```
+# metastore creation
+resource "databricks_metastore" "databricks-metastore" {
+  name          = var.metastore_name
+  force_destroy = true
+  region        = var.location
+  storage_root = format("abfss://%s@%s.dfs.core.windows.net/",
+    azurerm_storage_container.unity_catalog.name,
+  azurerm_storage_account.unity_catalog.name)
+
+}
+
+# give access to the access connector that will be assumed by Unity Catalog to access data
+resource "databricks_metastore_data_access" "access-connector-data-access" {
+  metastore_id = databricks_metastore.databricks-metastore.id
+  name         = var.access_connector_name
+  azure_managed_identity {
+    access_connector_id = azurerm_databricks_access_connector.access_connector.id
+  }
+  is_default    = true
+  force_destroy = true
+}
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/adb-uc-metastore/README-ko.md
+```
+# Azure에서 Unity Catalog 메타스토어 생성
+
+이 모듈에는 Azure에서 Unity Catalog 메타스토어를 생성하는 데 사용되는 Terraform 코드가 포함되어 있습니다.
+
+## 모듈 내용
+
+이 모듈을 사용하여 다음 작업을 수행할 수 있습니다:
+
+* Unity Catalog 리소스를 위한 리소스 그룹 생성.
+* Unity Catalog 메타스토어를 위한 Azure 스토리지 계정 및 스토리지 컨테이너 생성.
+* Databricks 액세스 커넥터 생성.
+* 필요한 권한 할당.
+* 생성된 스토리지 계정을 스토리지 루트로 사용하는 Unity Catalog 메타스토어 생성.
+
+## 사용 방법
+
+> **참고**  
+> 이 모듈을 사용하는 배포 예제는 [examples/adb-lakehouse](../../examples/adb-lakehouse)에서 찾을 수 있습니다.
+
+1. 다양한 [모듈 소스 유형](https://developer.hashicorp.com/terraform/language/modules/sources)을 사용하여 이 모듈을 참조합니다.
+2. [variables.tf](variables.tf)와 동일한 내용을 포함하는 `variables.tf`를 추가합니다.
+3. `terraform.tfvars` 파일을 추가하고 정의된 각 변수에 값을 제공합니다.
+4. `output.tf` 파일을 추가합니다.
+5. (선택 사항) [원격 백엔드](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm)를 구성합니다.
+6. `terraform init`을 실행하여 Terraform을 초기화하고 제공자를 준비합니다.
+7. `terraform apply`를 실행하여 리소스를 생성합니다.
+``````
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/adb-uc-metastore/providers.tf
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+    }
+    databricks = {
+      source = "databricks/databricks"
+    }
+  }
+}```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/adb-uc-metastore/README.md
+```
+# Creation of Unity Catalog metastore on Azure
+
+This module contains Terraform code used to create a Unity Catalog metastore on Azure.
+
+## Module content
+
+This module can be used to perform following tasks:
+
+* Create a resource group for Unity Catalog resources.
+* Create a Azure storage account for Unity Catalog metastore together with storage container.
+* Create a Databricks access connector.
+* Assign necessary permissions.
+* Create a Unity Catalog metastore with the created storage account as storage root.
+
+## How to use
+
+> **Note**  
+> A deployment example using this module can be found in [examples/adb-lakehouse](../../examples/adb-lakehouse)
+
+1. Reference this module using one of the different [module source types](https://developer.hashicorp.com/terraform/language/modules/sources)
+2. Add a `variables.tf` with the same content in [variables.tf](variables.tf)
+3. Add a `terraform.tfvars` file and provide values to each defined variable
+4. Add a `output.tf` file.
+5. (Optional) Configure your [remote backend](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm)
+6. Run `terraform init` to initialize terraform and get provider ready.
+7. Run `terraform apply` to create the resources.
+
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/adb-uc-metastore/azure.tf
+```
+resource "azurerm_resource_group" "shared_resource_group" {
+  name     = var.shared_resource_group_name
+  location = var.location
+  tags     = var.tags
+}
+
+resource "azurerm_databricks_access_connector" "access_connector" {
+  name                = var.access_connector_name
+  resource_group_name = azurerm_resource_group.shared_resource_group.name
+  location            = azurerm_resource_group.shared_resource_group.location
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_storage_account" "unity_catalog" {
+  name                     = var.metastore_storage_name
+  location                 = azurerm_resource_group.shared_resource_group.location
+  resource_group_name      = var.shared_resource_group_name
+  tags                     = var.tags
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+  is_hns_enabled           = true
+}
+
+resource "azurerm_storage_container" "unity_catalog" {
+  name                  = "${var.metastore_storage_name}-container"
+  storage_account_name  = azurerm_storage_account.unity_catalog.name
+  container_access_type = "private"
+}
+
+locals {
+  # Steps 2-4 in https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/azure-managed-identities#--step-2-grant-the-managed-identity-access-to-the-storage-account
+  uc_roles = [
+    "Storage Blob Data Contributor",  # Normal data access
+    "Storage Queue Data Contributor", # File arrival triggers
+    "EventGrid EventSubscription Contributor",
+  ]
+}
+
+resource "azurerm_role_assignment" "unity_catalog" {
+  for_each             = toset(local.uc_roles)
+  scope                = azurerm_storage_account.unity_catalog.id
+  role_definition_name = each.value
+  principal_id         = azurerm_databricks_access_connector.access_connector.identity[0].principal_id
+}
+```
+
+# /Users/mhjung/GitHub/terraform-databricks-examples/modules/adb-uc-metastore/variables.tf
+```
+variable "shared_resource_group_name" {
+  type        = string
+  description = "Name of the shared resource group"
+}
+
+variable "location" {
+  type        = string
+  description = "(Required) The location for the resources in this module"
+}
+
+variable "metastore_storage_name" {
+  type        = string
+  description = "Name of the storage account for Unity Catalog metastore"
+}
+
+variable "access_connector_name" {
+  type        = string
+  description = "Name of the access connector for Unity Catalog metastore"
+}
+
+variable "metastore_name" {
+  type        = string
+  description = "the name of the metastore"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "(Required) Map of tags to attach to resources"
+}
+
+```
+

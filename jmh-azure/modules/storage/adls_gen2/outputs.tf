@@ -1,4 +1,4 @@
-output "resource_group_name" {
+output "storage_resource_group_name" {
   value       = azurerm_resource_group.rg.name
   description = "The name of the resource group created for the data lake."
 }
@@ -10,6 +10,16 @@ output "storage_account_name" {
 
 output "storage_account_id" {
   value       = azurerm_storage_account.sa.id
+  description = "The ID of the storage account used for the data lake."
+}
+
+output "dbfs_storage_account_name" {
+  value       = azurerm_storage_account.sa_dbfs.name
+  description = "The name of the storage account used for the data lake."
+}
+
+output "dbfs_storage_account_id" {
+  value       = azurerm_storage_account.sa_dbfs.id
   description = "The ID of the storage account used for the data lake."
 }
 
@@ -45,12 +55,12 @@ output "gold_filesystem_name" {
 
 
 
-output "unity_catalog_storage_account_name" {
-  value       = azurerm_storage_account.unity_catalog.name
-  description = "The name of the Unity Catalog storage account."
-}
+# output "unity_catalog_storage_account_name" {
+#   value       = azurerm_storage_account.unity_catalog.name
+#   description = "The name of the Unity Catalog storage account."
+# }
 
-output "unity_catalog_storage_container_name" {
-  value       = azurerm_storage_container.unity_catalog.name
-  description = "The name of the Unity Catalog storage container."
-}
+# output "unity_catalog_storage_container_name" {
+#   value       = azurerm_storage_container.unity_catalog.name
+#   description = "The name of the Unity Catalog storage container."
+# }

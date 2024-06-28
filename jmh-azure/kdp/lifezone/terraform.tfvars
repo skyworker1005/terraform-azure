@@ -26,6 +26,7 @@ adls_subnet_cidr             = "10.0.4.0/24"
 access_connector_name        = "KDP-ADLS-AC"
 metastore_storage_name       = "kdpmetastore"
 azurerm_storage_container    = "kdpcatalog"
+dbfs_storage_account_name    = "kdpdbfs"
 
 unity_catalog_name = "kdpunitycatalog"
 unity_catalog_metastore_name = "kdpunitycatalogmetastore"

@@ -169,3 +169,9 @@ variable "sql_warehouse_name" {
   default    = "kdpwarehouse"
   
 }
+
+variable "dbfs_storage_account_name" {
+  description = "dbfs_storage_account_name"
+  type        = string
+  default    = "kdpdbfs"  
+}

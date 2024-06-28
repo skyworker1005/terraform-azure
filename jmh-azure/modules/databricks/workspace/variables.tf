@@ -80,3 +80,10 @@ variable "enable_unity_catalog" {
   type        = bool
   default     = true
 }
+
+
+variable "dbfs_storage_account_name" {
+  description = "dbfs_storage_account_name"
+  type        = string
+  default    = "kdpdbfs"  
+}

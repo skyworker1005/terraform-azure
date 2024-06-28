@@ -59,6 +59,8 @@ resource "azurerm_subnet" "private_endpoint_subnet" {
 }
 
 
+
+
 # ADLS Subnet
 resource "azurerm_subnet" "adls_subnet" {
   name                 = "${var.prefix}-${var.adls_subnet_name}"
